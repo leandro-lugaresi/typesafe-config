@@ -1,0 +1,12 @@
+{
+  "db": {
+    "url": "postgres: //localhost:5432"
+  },
+  "port": 3000,
+  "file": "test.json",
+  "nested": {
+    "foo": {
+      "bar": "baz"
+    }
+  }
+}

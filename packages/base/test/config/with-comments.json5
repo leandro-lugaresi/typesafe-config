@@ -1,0 +1,13 @@
+{
+  "db": {
+    "url": "postgres: //localhost:5432"
+  },
+  "port": 3000,
+  // file name used inside the test
+  "file": "with-comments.json5",
+  "nested": {
+    "foo": {
+      "bar": "baz"
+    }
+  }
+}
