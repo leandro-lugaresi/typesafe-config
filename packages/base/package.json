@@ -1,0 +1,14 @@
+{
+  "name": "@simple-config/base",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc index.ts --outDir dist",
+    "test": "jest"
+  },
+  "dependencies": {
+    "json5": "^2.2.3",
+    "ts-deepmerge": "^6.2.0",
+    "zod": "^3.22.4"
+  }
+}
