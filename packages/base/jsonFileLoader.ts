@@ -1,7 +1,7 @@
-import fs from "fs";
-import Path from "path";
-import { ConfigLoader } from "./types";
-import { errorHaveCode, getEnvOrDefault } from "./utils";
+import fs from 'fs';
+import Path from 'path';
+import { ConfigLoader } from './types';
+import { errorHaveCode, getEnvOrDefault } from './utils';
 
 // External dependency only used for JSON5 support.
 var JSON5: JSON | null = null;
@@ -16,9 +16,9 @@ export class JsonFileLoader implements ConfigLoader {
   private readonly configDir: string = process.cwd();
 
   constructor(configDir?: string, baseName?: string) {
-    const env = getEnvOrDefault("NODE_ENV", "development");
+    const env = getEnvOrDefault('NODE_ENV', 'development');
 
-    this.configDir = configDir ?? Path.join(process.cwd(), "config");
+    this.configDir = configDir ?? Path.join(process.cwd(), 'config');
 
     // if a basename is passed, we only use it.
     // This avoid mistakes like expecting to load the file provided but
@@ -36,13 +36,13 @@ export class JsonFileLoader implements ConfigLoader {
     if (file === null) {
       throw new Error(
         `config file not found. Searched for ${this.getFilesAllowed().join(
-          ", ",
+          ', ',
         )}`,
       );
     }
     const content = this.loadFile(file);
     const result = this.parseFile(content);
-    if (typeof result === "object" && result !== null) {
+    if (typeof result === 'object' && result !== null) {
       return result;
     }
     throw new Error(
@@ -62,7 +62,7 @@ export class JsonFileLoader implements ConfigLoader {
 
       return Path.join(this.configDir, found);
     } catch (error) {
-      if (errorHaveCode(error) && error.code === "ENOENT") {
+      if (errorHaveCode(error) && error.code === 'ENOENT') {
         throw new Error(`config directory ${this.configDir} not found`);
       }
 
@@ -87,9 +87,9 @@ export class JsonFileLoader implements ConfigLoader {
 
   private loadFile(fullFileName: string) {
     try {
-      return fs.readFileSync(fullFileName, "utf-8");
+      return fs.readFileSync(fullFileName, 'utf-8');
     } catch (error) {
-      if (errorHaveCode(error) && error.code === "ENOENT") {
+      if (errorHaveCode(error) && error.code === 'ENOENT') {
         throw new Error(`confid file ${fullFileName} not found`);
       }
 
@@ -112,13 +112,16 @@ export class JsonFileLoader implements ConfigLoader {
     } catch (error) {
       if (
         error instanceof SyntaxError &&
-        !error.message.includes("token '/'")
+        !(
+          error.message.includes("token '/'") ||
+          error.message.includes('token /')
+        )
       ) {
         throw error;
       }
 
       if (JSON5 === null) {
-        JSON5 = require("json5") as JSON;
+        JSON5 = require('json5') as JSON;
       }
 
       return JSON5.parse(content);
