@@ -1,10 +1,10 @@
-import fs from 'fs';
-import Path from 'path';
+import { readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
 import { ConfigLoader } from './types';
 import { errorHaveCode, getEnvOrDefault } from './utils';
 
 // External dependency only used for JSON5 support.
-var JSON5: JSON | null = null;
+let JSON5: JSON | null = null;
 
 export type Config = {
   configDir?: string;
@@ -18,7 +18,7 @@ export class JsonFileLoader implements ConfigLoader {
   constructor(configDir?: string, baseName?: string) {
     const env = getEnvOrDefault('NODE_ENV', 'development');
 
-    this.configDir = configDir ?? Path.join(process.cwd(), 'config');
+    this.configDir = configDir ?? join(process.cwd(), 'config');
 
     // if a basename is passed, we only use it.
     // This avoid mistakes like expecting to load the file provided but
@@ -53,14 +53,14 @@ export class JsonFileLoader implements ConfigLoader {
   private locateMatchingFile() {
     try {
       const allowed = this.getFilesAllowed();
-      const files = fs.readdirSync(this.configDir);
+      const files = readdirSync(this.configDir);
       const found = allowed.find((file) => files.includes(file));
 
       if (found === undefined) {
         return null;
       }
 
-      return Path.join(this.configDir, found);
+      return join(this.configDir, found);
     } catch (error) {
       if (errorHaveCode(error) && error.code === 'ENOENT') {
         throw new Error(`config directory ${this.configDir} not found`);
@@ -73,7 +73,8 @@ export class JsonFileLoader implements ConfigLoader {
       }
 
       throw new Error(
-        `failed to load the config directory ${this.configDir}. Error: ${error instanceof Error ? error.message : error
+        `failed to load the config directory ${this.configDir}. Error: ${
+          error instanceof Error ? error.message : error
         }`,
       );
     }
@@ -87,7 +88,7 @@ export class JsonFileLoader implements ConfigLoader {
 
   private loadFile(fullFileName: string) {
     try {
-      return fs.readFileSync(fullFileName, 'utf-8');
+      return readFileSync(fullFileName, 'utf-8');
     } catch (error) {
       if (errorHaveCode(error) && error.code === 'ENOENT') {
         throw new Error(`confid file ${fullFileName} not found`);
@@ -100,7 +101,8 @@ export class JsonFileLoader implements ConfigLoader {
       }
 
       throw new Error(
-        `failed to read config file ${fullFileName}. Error: ${error instanceof Error ? error.message : error
+        `failed to read config file ${fullFileName}. Error: ${
+          error instanceof Error ? error.message : error
         }`,
       );
     }
@@ -121,6 +123,7 @@ export class JsonFileLoader implements ConfigLoader {
       }
 
       if (JSON5 === null) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         JSON5 = require('json5') as JSON;
       }
 

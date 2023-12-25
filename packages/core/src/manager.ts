@@ -1,7 +1,7 @@
-import merge from "ts-deepmerge";
-import { z, ZodObject } from "zod";
-import { toError } from "./utils";
-import { ConfigOptions, ConfigSchema, Simplify } from "./types";
+import merge from 'ts-deepmerge';
+import { z, ZodObject } from 'zod';
+import { toError } from './utils';
+import { ConfigOptions, ConfigSchema, Simplify } from './types';
 
 export class ConfigManager<TSchema extends ConfigSchema> {
   private data?: Simplify<z.infer<ZodObject<TSchema>>>;
@@ -51,7 +51,7 @@ export class ConfigManager<TSchema extends ConfigSchema> {
 
   public values() {
     if (this.data === undefined) {
-      throw new Error("No config available, did you forget to call init()?");
+      throw new Error('No config available, did you forget to call init()?');
     }
     return this.data;
   }

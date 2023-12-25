@@ -1,4 +1,4 @@
-import Path from "path";
+import { isAbsolute, join } from 'path';
 
 type ErrorWithMessage = {
   message: string;
@@ -14,31 +14,31 @@ export function getEnvOrDefault(key: string, defaultValue: string) {
 }
 
 export function toAbsolutePath(path: string) {
-  if (Path.isAbsolute(path)) {
+  if (isAbsolute(path)) {
     return path;
   }
-  return Path.join(process.cwd(), path);
+  return join(process.cwd(), path);
 }
 
 export function errorHaveCode(
   error: unknown,
 ): error is Error & { code: string } {
-  return error instanceof Error && "code" in error;
+  return error instanceof Error && 'code' in error;
 }
 
 function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
   return (
-    typeof error === "object" &&
+    typeof error === 'object' &&
     error !== null &&
-    "message" in error &&
-    typeof (error as Record<string, unknown>)["message"] === "string"
+    'message' in error &&
+    typeof (error as Record<string, unknown>)['message'] === 'string'
   );
 }
 
 export function toError(maybeError: unknown): Error {
   if (maybeError instanceof Error) return maybeError;
   if (isErrorWithMessage(maybeError)) return maybeError as Error;
-  if (typeof maybeError === "string") return new Error(maybeError);
+  if (typeof maybeError === 'string') return new Error(maybeError);
 
   try {
     return new Error(JSON.stringify(maybeError));

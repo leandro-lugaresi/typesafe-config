@@ -1,4 +1,4 @@
-import Path from 'path';
+import { join, resolve } from 'path';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import { JsonFileLoader } from '../jsonFileLoader';
 
@@ -8,7 +8,7 @@ describe('JsonFileLoader', () => {
 
   beforeAll(() => {
     process.env.NODE_ENV = 'test';
-    process.cwd = () => Path.join(originalCwd(), 'packages/base/test');
+    process.cwd = () => join(originalCwd(), 'packages/core/src/test');
   });
 
   afterAll(() => {
@@ -24,7 +24,7 @@ describe('JsonFileLoader', () => {
 
   test('configDir will load the file based on the given directory', async () => {
     const loader = new JsonFileLoader(
-      Path.resolve(__dirname, './config'),
+      resolve(__dirname, './config'),
       'default',
     );
     const result = await loader.load();
@@ -33,7 +33,7 @@ describe('JsonFileLoader', () => {
 
   test.skip('fail if the config file does not exist', async () => {
     const loader = new JsonFileLoader(
-      Path.resolve(__dirname, './config'),
+      resolve(__dirname, './config'),
       'not-exist',
     );
     expect(() => loader.load()).toThrow(/config file not found/);
@@ -41,7 +41,7 @@ describe('JsonFileLoader', () => {
 
   test('loads json5 files', async () => {
     const loader = new JsonFileLoader(
-      Path.resolve(__dirname, './config'),
+      resolve(__dirname, './config'),
       'with-comments',
     );
     const result = await loader.load();

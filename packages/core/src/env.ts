@@ -5,7 +5,7 @@ const concatKeys = (prefix: string, key: string) =>
   prefix === '' ? key : `${prefix}_${key}`;
 
 export class EnvLoader implements ConfigLoader {
-  constructor(private readonly envs: Dict<string>) { }
+  constructor(private readonly envs: Dict<string>) {}
 
   /**
    * Returns the environment variable names that are used to load the given

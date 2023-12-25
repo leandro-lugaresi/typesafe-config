@@ -1,0 +1,12 @@
+{
+  "name": "@typesafe-config/core",
+  "version": "0.0.1",
+  "dependencies": {
+    "json5": "^2.2.3",
+    "ts-deepmerge": "^6.2.0",
+    "zod": "^3.22.4"
+  },
+  "type": "commonjs",
+  "main": "./index.cjs",
+  "module": "./index.js"
+}
