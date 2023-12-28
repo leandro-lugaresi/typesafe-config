@@ -8,7 +8,7 @@ describe('EnvLoader', () => {
       node_env: z.string(),
     };
 
-    process.env.NODE_ENV = 'test';
+    process.env['NODE_ENV'] = 'test';
 
     const loader = new EnvLoader(process.env);
     const result = await loader.load(schema);
