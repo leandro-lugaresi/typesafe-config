@@ -2,17 +2,29 @@ import { join, resolve } from 'path';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import { JsonFileLoader } from '../jsonFileLoader';
 
+class NoErrorThrownError extends Error { }
+
+const getError = async <TError>(call: () => unknown): Promise<TError> => {
+  try {
+    await call();
+
+    throw new NoErrorThrownError();
+  } catch (error: unknown) {
+    return error as TError;
+  }
+};
+
 describe('JsonFileLoader', () => {
-  const originalEnv = process.env.NODE_ENV;
+  const originalEnv = process.env['NODE_ENV'];
   const originalCwd = process.cwd;
 
   beforeAll(() => {
-    process.env.NODE_ENV = 'test';
+    process.env['NODE_ENV'] = 'test';
     process.cwd = () => join(originalCwd(), 'packages/core/src/test');
   });
 
   afterAll(() => {
-    process.env.NODE_ENV = originalEnv;
+    process.env['NODE_ENV'] = originalEnv;
     process.cwd = originalCwd;
   });
 
@@ -31,12 +43,14 @@ describe('JsonFileLoader', () => {
     expect(result).toMatchObject({ file: 'default.json' });
   });
 
-  test.skip('fail if the config file does not exist', async () => {
+  test('fail if the config file does not exist', async () => {
     const loader = new JsonFileLoader(
       resolve(__dirname, './config'),
       'not-exist',
     );
-    expect(() => loader.load()).toThrow(/config file not found/);
+    const error = await getError<Error>(() => loader.load());
+    expect(error).not.toBeInstanceOf(NoErrorThrownError);
+    expect(error.message).toMatch(/config file not found/);
   });
 
   test('loads json5 files', async () => {
