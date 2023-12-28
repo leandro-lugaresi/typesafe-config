@@ -39,7 +39,7 @@ export class ConfigManager<TSchema extends ConfigSchema> {
     const parsedResult = this.schema.safeParse(data);
     if (!parsedResult.success) {
       if (this.options.onValidationError) {
-        this.options.onValidationError(parsedResult.error);
+        this.options.onValidationError(parsedResult.error, data);
       } else {
         throw parsedResult.error;
       }

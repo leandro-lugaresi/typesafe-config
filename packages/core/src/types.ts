@@ -1,4 +1,4 @@
-import { ZodError, ZodType } from "zod";
+import { ZodError, ZodType } from 'zod';
 
 export type Simplify<T> = {
   [P in keyof T]: T[P];
@@ -18,7 +18,7 @@ export interface ConfigLoader {
 
 export interface ConfigOptions<TSchema extends Record<string, ZodType>> {
   schema: TSchema;
-  onValidationError?: (error: ZodError) => never;
+  onValidationError?: (error: ZodError, dataLoaded: unknown) => never;
   onBackendError?: (error: Error) => never;
   emptyStringAsUndefined?: boolean;
   loaders: ConfigLoader[];
