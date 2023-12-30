@@ -1,8 +1,8 @@
 import { join, resolve } from 'path';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { JsonFileLoader } from '../jsonFileLoader';
+import { JsonFileLoader } from './jsonFileLoader';
 
-class NoErrorThrownError extends Error { }
+class NoErrorThrownError extends Error {}
 
 const getError = async <TError>(call: () => unknown): Promise<TError> => {
   try {
@@ -20,7 +20,7 @@ describe('JsonFileLoader', () => {
 
   beforeAll(() => {
     process.env['NODE_ENV'] = 'test';
-    process.cwd = () => join(originalCwd(), 'packages/core/src/test');
+    process.cwd = () => join(originalCwd(), 'packages/core/src');
   });
 
   afterAll(() => {

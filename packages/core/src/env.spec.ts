@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { z } from 'zod';
-import { EnvLoader } from '../env';
+import { EnvLoader } from './env';
 
 describe('EnvLoader', () => {
   test('EnvLoader must be compatible with process.env', async () => {
