@@ -20,9 +20,7 @@ export function toAbsolutePath(path: string) {
   return join(process.cwd(), path);
 }
 
-export function errorHaveCode(
-  error: unknown,
-): error is Error & { code: string } {
+export function errorHaveCode(error: unknown): error is Error & { code: string } {
   return error instanceof Error && 'code' in error;
 }
 
