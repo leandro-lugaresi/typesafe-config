@@ -32,6 +32,7 @@ export const ZodSchemaProvider: SchemaProvider<ZodSchemaTypeProvider> = {
       return { success: false, error: result.error };
     }
   },
+
   fullQualifiedKeys: schema => {
     return [];
   },
