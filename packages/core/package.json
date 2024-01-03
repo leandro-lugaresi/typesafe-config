@@ -8,5 +8,8 @@
   },
   "type": "commonjs",
   "main": "./index.cjs",
-  "module": "./index.js"
+  "module": "./index.js",
+  "devDependencies": {
+    "expect-type": "^0.17.3"
+  }
 }

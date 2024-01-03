@@ -34,6 +34,6 @@ export const ZodSchemaProvider: SchemaProvider<ZodSchemaTypeProvider> = {
   },
 
   fullQualifiedKeys: schema => {
-    return [];
+    return namesFromSchema('', schema);
   },
 };
