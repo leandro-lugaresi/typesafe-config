@@ -7,19 +7,20 @@ import { JsonFileLoader } from './jsonFileLoader';
 
 describe(ConfigManager, () => {
   test('should be able to load the entire config from loaders', async () => {
-    const manager = new ConfigManager({
-      schema: {
+    const manager = new ConfigManager(
+      'zod',
+      z.object({
         db: z.object({ url: z.string() }),
         port: z.number(),
         nested: z.object({ foo: z.object({ bar: z.string() }) }),
-      },
-      loaders: [
+      }),
+      [
         new JsonFileLoader(resolve(__dirname, './config'), 'default'),
         new EnvLoader({
           DB_URL: 'postgres://from-env:5432',
         }),
       ],
-    });
+    );
 
     await manager.init();
 
