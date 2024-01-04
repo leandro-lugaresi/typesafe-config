@@ -10,7 +10,7 @@ export class EnvLoader implements ConfigLoader {
     for (const fqln of fqlns) {
       const value = this.envs[fqln.key];
       if (value === undefined) {
-        return;
+        continue;
       }
 
       let current = result;

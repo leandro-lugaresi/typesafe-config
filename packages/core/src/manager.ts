@@ -22,10 +22,15 @@ export class ConfigManager<
 
   public async init() {
     const values: object[] = [];
+    const adapter = adapters.get(this.adapterKey) as SchemaProvider<TypeConfigRegistry[Adapter]>;
+    if (!adapter) {
+      throw new Error(`Adapter ${this.adapterKey} not registered`);
+    }
+
+    const fqlns = adapter.fullQualifiedKeys(this.schema);
     for (const loader of this.loaders) {
       try {
-        // TODO: add the full qualified names to the loaders
-        const data = await loader.load([]);
+        const data = await loader.load(fqlns);
         if (data) {
           values.push(data);
         }
@@ -38,11 +43,6 @@ export class ConfigManager<
       }
     }
     const data = merge.withOptions({ mergeArrays: true, allowUndefinedOverrides: false }, ...values);
-
-    const adapter = adapters.get(this.adapterKey) as SchemaProvider<TypeConfigRegistry[Adapter]>;
-    if (!adapter) {
-      throw new Error(`Adapter ${this.adapterKey} not registered`);
-    }
 
     const parsedResult = adapter.validate(this.schema, data);
     if (parsedResult.success) {
