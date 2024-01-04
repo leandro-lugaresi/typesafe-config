@@ -1,5 +1,5 @@
 import * as zodProvider from './adapters/zod';
-import { InferError, SchemaTypeProvider } from './schema';
+import { InferError, SchemaTypeProvider, FQLN } from './schema';
 
 export type Simplify<T> = {
   [P in keyof T]: T[P];
@@ -12,7 +12,7 @@ export interface Dict<T> {
 export type RawObject = Dict<RawObject | string>;
 
 export interface ConfigLoader {
-  load(fullQualifiedNames: string[]): Promise<unknown>;
+  load(fqlns: FQLN[]): Promise<unknown>;
 }
 
 type DefaultSchemaTypeProvider = zodProvider.ZodSchemaTypeProvider;

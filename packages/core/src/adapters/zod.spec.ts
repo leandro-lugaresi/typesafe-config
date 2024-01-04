@@ -45,8 +45,15 @@ describe('ZodSchemaProvider', () => {
   });
 
   it('fullQualifiedKeys should return the list of FQFN based on the schema passed', async () => {
-    const result = ZodSchemaProvider.fullQualifiedKeys(schema);
+    const extendedSchema = schema.extend({ NODE_ENV: z.string() });
 
-    expect(result).toEqual(['DB_URL', 'PORT', 'NESTED_FOO_BAR']);
+    const result = ZodSchemaProvider.fullQualifiedKeys(extendedSchema);
+
+    expect(result).toEqual([
+      { key: 'DB_URL', path: ['db', 'url'] },
+      { key: 'PORT', path: ['port'] },
+      { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'] },
+      { key: 'NODE_ENV', path: ['NODE_ENV'] },
+    ]);
   });
 });

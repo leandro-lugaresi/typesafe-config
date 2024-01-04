@@ -1,18 +1,20 @@
-import { SchemaProvider, SchemaTypeProvider } from '../schema';
+import { FQLN, SchemaProvider, SchemaTypeProvider } from '../schema';
 import { AnyZodObject, z, ZodObject, ZodTypeAny } from 'zod';
 
 const concatKeys = (prefix: string, key: string) => (prefix === '' ? key : `${prefix}_${key}`);
 
-const namesFromSchema = <Schema extends AnyZodObject>(prefix: string, schema: Schema) => {
-  const names: string[] = [];
+const namesFromSchema = <Schema extends AnyZodObject>(keyPrefix: string, paths: string[], schema: Schema): FQLN[] => {
+  const fqlns: FQLN[] = [];
   for (const [key, schemaOrSpec] of Object.entries(schema.shape)) {
+    const currentKey = concatKeys(keyPrefix, key.toUpperCase());
+    const currentPath = paths.concat([key]);
     if (schemaOrSpec instanceof ZodObject) {
-      names.push(...namesFromSchema(concatKeys(prefix, key.toUpperCase()), schemaOrSpec));
+      fqlns.push(...namesFromSchema(currentKey, currentPath, schemaOrSpec));
     } else {
-      names.push(concatKeys(prefix, key.toUpperCase()));
+      fqlns.push({ key: concatKeys(keyPrefix, key.toUpperCase()), path: currentPath });
     }
   }
-  return names;
+  return fqlns;
 };
 
 export interface ZodSchemaTypeProvider extends SchemaTypeProvider {
@@ -34,6 +36,6 @@ export const ZodSchemaProvider: SchemaProvider<ZodSchemaTypeProvider> = {
   },
 
   fullQualifiedKeys: schema => {
-    return namesFromSchema('', schema);
+    return namesFromSchema('', [], schema);
   },
 };
