@@ -1,38 +1,33 @@
-import { describe, expect, test } from '@jest/globals';
-import { z } from 'zod';
+import { describe, expect, it } from '@jest/globals';
 import { EnvLoader } from './env';
 
-describe('EnvLoader', () => {
-  test('EnvLoader must be compatible with process.env', async () => {
-    const schema = {
-      node_env: z.string(),
-    };
+describe(EnvLoader, () => {
+  const envs = {
+    DB_URL: 'postgres://localhost:5432',
+    PORT: '3000',
+    NESTED_FOO_BAR: 'baz',
+    NESTED_FOO_BAZ: 'bar', // This should be ignored
+  };
 
+  it('EnvLoader must be compatible with process.env', async () => {
     process.env['NODE_ENV'] = 'test';
 
     const loader = new EnvLoader(process.env);
-    const result = await loader.load(schema);
+    const result = await loader.load([{ key: 'NODE_ENV', path: ['NODE_ENV'] }]);
     expect(result).toEqual({
-      node_env: 'test',
+      NODE_ENV: 'test',
     });
   });
 
-  test('load should be able to get the values from environment variables', async () => {
-    const schema = {
-      db: z.object({ url: z.string() }),
-      port: z.number(),
-      nested: z.object({ foo: z.object({ bar: z.string() }) }),
-    };
-
-    const envs = {
-      DB_URL: 'postgres://localhost:5432',
-      PORT: '3000',
-      NESTED_FOO_BAR: 'baz',
-      NESTED_FOO_BAZ: 'bar', // This should be ignored
-    };
-
+  it('load should be able to get the values from environment variables', async () => {
     const loader = new EnvLoader(envs);
-    const result = await loader.load(schema);
+
+    const result = await loader.load([
+      { key: 'DB_URL', path: ['db', 'url'] },
+      { key: 'PORT', path: ['port'] },
+      { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'] },
+    ]);
+
     expect(result).toEqual({
       db: { url: 'postgres://localhost:5432' },
       // The source don't convert any value and just return the raw values
@@ -42,22 +37,15 @@ describe('EnvLoader', () => {
     });
   });
 
-  test('load should work if the schema have variables in "ENV_CASE"', async () => {
-    const schema = {
-      DB_URL: z.string(),
-      PORT: z.number(),
-      nested: z.object({ foo: z.object({ bar: z.string() }) }),
-    };
-
-    const envs = {
-      DB_URL: 'postgres://localhost:5432',
-      PORT: '3000',
-      NESTED_FOO_BAR: 'baz',
-      NESTED_FOO_BAZ: 'bar', // This should be ignored
-    };
-
+  it('load should work if the schema have variables in "ENV_CASE"', async () => {
     const loader = new EnvLoader(envs);
-    const result = await loader.load(schema);
+
+    const result = await loader.load([
+      { key: 'DB_URL', path: ['DB_URL'] },
+      { key: 'PORT', path: ['PORT'] },
+      { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'] },
+    ]);
+
     expect(result).toEqual({
       DB_URL: 'postgres://localhost:5432',
       // The source don't convert any value and just return the raw values
@@ -65,19 +53,5 @@ describe('EnvLoader', () => {
       PORT: '3000',
       nested: { foo: { bar: 'baz' } },
     });
-  });
-
-  test('environmentNames should return the environment variables names based on the schema passed', async () => {
-    const schema = {
-      db: z.object({ url: z.string() }),
-      port: z.number(),
-      nested: z.object({ foo: z.object({ bar: z.string() }) }),
-    };
-
-    const envs = {};
-
-    const loader = new EnvLoader(envs);
-    const result = loader.environmentNames(schema);
-    expect(result).toEqual(['DB_URL', 'PORT', 'NESTED_FOO_BAR']);
   });
 });
