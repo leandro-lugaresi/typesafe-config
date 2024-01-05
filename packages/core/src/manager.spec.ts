@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 import { z } from 'zod';
 import { resolve } from 'path';
 import { ConfigManager } from './manager';
@@ -6,7 +6,7 @@ import { EnvLoader } from './env';
 import { JsonFileLoader } from './jsonFileLoader';
 
 describe(ConfigManager, () => {
-  test('should be able to load the entire config from loaders', async () => {
+  it('should be able to load the entire config from loaders', async () => {
     const manager = new ConfigManager(
       'zod',
       z.object({
