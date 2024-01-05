@@ -1,14 +1,9 @@
 export interface SchemaTypeProvider<Schema = unknown> {
   schema: Schema;
-  input: unknown;
   output: unknown;
   base: unknown;
   error: unknown;
 }
-
-export type InferInput<SchemaType extends SchemaTypeProvider, TSchema> = (SchemaType & {
-  schema: TSchema;
-})['input'];
 
 export type InferOutput<SchemaType extends SchemaTypeProvider, TSchema> = (SchemaType & {
   schema: TSchema;

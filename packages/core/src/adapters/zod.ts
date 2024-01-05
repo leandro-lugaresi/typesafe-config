@@ -18,7 +18,6 @@ const namesFromSchema = <Schema extends AnyZodObject>(keyPrefix: string, paths: 
 };
 
 export interface ZodSchemaTypeProvider extends SchemaTypeProvider {
-  input: this['schema'] extends ZodTypeAny ? z.input<this['schema']> : never;
   output: this['schema'] extends ZodTypeAny ? z.output<this['schema']> : never;
   error: z.ZodError;
   base: ZodObject<Record<string, ZodTypeAny>>;
@@ -28,7 +27,7 @@ export const ZodSchemaProvider: SchemaProvider<ZodSchemaTypeProvider> = {
   validate: (schema, input) => {
     const result = schema.safeParse(input);
     if (result.success) {
-      // TODO: This is a hack, we should not need to cast here
+      // TODO: is possible to remove the cast?
       return { success: true, data: result.data as ZodSchemaTypeProvider['output'] };
     } else {
       return { success: false, error: result.error };
