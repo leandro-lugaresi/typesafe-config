@@ -1,14 +1,14 @@
 import merge from 'ts-deepmerge';
 import { toError } from './utils';
 import { ConfigLoader, Simplify } from './types';
-import { SchemaTypeProvider, InferOutput, SchemaProvider, InferInput, InferError, InferBaseSchema } from './schema';
+import { InferOutput, SchemaProvider, InferError } from './schema';
 import { adapters } from './registry';
 
 export class ConfigManager<
   Adapter extends keyof TypeConfigRegistry,
   TSchema extends TypeConfigRegistry[Adapter]['base'],
 > {
-  private data?: Simplify<InferOutput<TypeConfigRegistry[Adapter], TSchema>>;
+  private currentValidState?: Simplify<InferOutput<TypeConfigRegistry[Adapter], TSchema>>;
 
   constructor(
     private adapterKey: Adapter,
@@ -46,7 +46,7 @@ export class ConfigManager<
 
     const parsedResult = adapter.validate(this.schema, data);
     if (parsedResult.success) {
-      this.data = parsedResult.data;
+      this.currentValidState = parsedResult.data;
       return;
     }
 
@@ -58,9 +58,9 @@ export class ConfigManager<
   }
 
   public values() {
-    if (!this.data) {
-      throw new Error('ConfigManager not initialized, did you forget to call init()?');
+    if (!this.currentValidState) {
+      throw new Error('ConfigManager not initialized or without a valid config');
     }
-    return this.data;
+    return this.currentValidState;
   }
 }
