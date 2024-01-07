@@ -2,8 +2,8 @@ import { describe, expect, it } from '@jest/globals';
 import { z } from 'zod';
 import { resolve } from 'path';
 import { ConfigManager } from './manager';
-import { EnvLoader } from './env';
-import { JsonFileLoader } from './jsonFileLoader';
+import { environmentVariablesLoader } from './env';
+import { jsonFileLoader } from './jsonFileLoader';
 
 describe(ConfigManager, () => {
   it('should be able to load the entire config from loaders', async () => {
@@ -15,8 +15,8 @@ describe(ConfigManager, () => {
         nested: z.object({ foo: z.object({ bar: z.string() }) }),
       }),
       [
-        new JsonFileLoader(resolve(__dirname, './config'), 'default'),
-        new EnvLoader({
+        jsonFileLoader(resolve(__dirname, './config'), 'default'),
+        environmentVariablesLoader({
           DB_URL: 'postgres://from-env:5432',
         }),
       ],

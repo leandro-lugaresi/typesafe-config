@@ -6,128 +6,94 @@ import { errorHaveCode, getEnvOrDefault } from './utils';
 // External dependency only used for JSON5 support.
 let JSON5: JSON | null = null;
 
-export type Config = {
-  configDir?: string;
-  filename?: string;
-};
+function getFilesAllowed(baseNames: string[]) {
+  return baseNames.map(baseName => [`${baseName}.json`, `${baseName}.json5`]).flat();
+}
 
-export class JsonFileLoader implements ConfigLoader {
-  private baseNames: string[] = [];
-  private readonly configDir: string = process.cwd();
+function locateMatchingFile(configDir: string, baseNames: string[]) {
+  try {
+    const allowed = getFilesAllowed(baseNames);
+    const files = readdirSync(configDir);
+    const found = allowed.find(file => files.includes(file));
 
-  constructor(configDir?: string, baseName?: string) {
-    const env = getEnvOrDefault('NODE_ENV', 'development');
-
-    this.configDir = configDir ?? join(process.cwd(), 'config');
-
-    // if a basename is passed, we only use it.
-    // This avoid mistakes like expecting to load the file provided but
-    // instead load the file based on NODE_ENV.
-    if (baseName !== undefined) {
-      this.baseNames.push(baseName);
-      return;
+    if (found === undefined) {
+      return null;
     }
 
-    this.baseNames.push(env, `${env}.local`);
+    return join(configDir, found);
+  } catch (error) {
+    if (errorHaveCode(error) && error.code === 'ENOENT') {
+      throw new Error(`config directory ${configDir} not found`);
+    }
+
+    if (errorHaveCode(error)) {
+      throw new Error(`failed to load the config directory ${configDir}. Error: ${error.message} (${error.code})`);
+    }
+
+    throw new Error(
+      `failed to load the config directory ${configDir}. Error: ${error instanceof Error ? error.message : error}`,
+    );
+  }
+}
+
+function loadFile(fullFileName: string) {
+  try {
+    return readFileSync(fullFileName, 'utf-8');
+  } catch (error) {
+    if (errorHaveCode(error) && error.code === 'ENOENT') {
+      throw new Error(`confid file ${fullFileName} not found`);
+    }
+
+    if (errorHaveCode(error)) {
+      throw new Error(`failed to read config file ${fullFileName}. Error: ${error.message} (${error.code})`);
+    }
+
+    throw new Error(
+      `failed to read config file ${fullFileName}. Error: ${error instanceof Error ? error.message : error}`,
+    );
+  }
+}
+
+function parseFile(content: string) {
+  try {
+    return JSON.parse(content);
+  } catch (error) {
+    if (error instanceof SyntaxError && !(error.message.includes("token '/'") || error.message.includes('token /'))) {
+      throw error;
+    }
+
+    if (JSON5 === null) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      JSON5 = require('json5') as JSON;
+    }
+
+    return JSON5.parse(content);
+  }
+}
+
+export function jsonFileLoader(configDir?: string, baseName?: string): ConfigLoader {
+  const baseNames: string[] = [];
+
+  // if a basename is passed, we only use it.
+  // This avoid mistakes like expecting to load the file provided but
+  // instead load the file based on NODE_ENV.
+  if (baseName !== undefined) {
+    baseNames.push(baseName);
+  } else {
+    const env = getEnvOrDefault('NODE_ENV', 'development');
+    baseNames.push(env, `${env}.local`);
   }
 
-  public async load() {
-    const file = this.locateMatchingFile();
+  return () => {
+    const file = locateMatchingFile(configDir ?? join(process.cwd(), 'config'), baseNames);
     if (file === null) {
-      throw new Error(
-        `config file not found. Searched for ${this.getFilesAllowed().join(
-          ', ',
-        )}`,
-      );
+      throw new Error(`config file not found. Searched for ${getFilesAllowed(baseNames).join(', ')}`);
     }
-    const content = this.loadFile(file);
-    const result = this.parseFile(content);
+    const content = loadFile(file);
+    const result = parseFile(content);
     if (typeof result === 'object' && result !== null) {
       return result;
     }
-    throw new Error(
-      `config file ${file} returned an invalid json object ${result}`,
-    );
-  }
-
-  private locateMatchingFile() {
-    try {
-      const allowed = this.getFilesAllowed();
-      const files = readdirSync(this.configDir);
-      const found = allowed.find((file) => files.includes(file));
-
-      if (found === undefined) {
-        return null;
-      }
-
-      return join(this.configDir, found);
-    } catch (error) {
-      if (errorHaveCode(error) && error.code === 'ENOENT') {
-        throw new Error(`config directory ${this.configDir} not found`);
-      }
-
-      if (errorHaveCode(error)) {
-        throw new Error(
-          `failed to load the config directory ${this.configDir}. Error: ${error.message} (${error.code})`,
-        );
-      }
-
-      throw new Error(
-        `failed to load the config directory ${this.configDir}. Error: ${
-          error instanceof Error ? error.message : error
-        }`,
-      );
-    }
-  }
-
-  private getFilesAllowed() {
-    return this.baseNames
-      .map((baseName) => [`${baseName}.json`, `${baseName}.json5`])
-      .flat();
-  }
-
-  private loadFile(fullFileName: string) {
-    try {
-      return readFileSync(fullFileName, 'utf-8');
-    } catch (error) {
-      if (errorHaveCode(error) && error.code === 'ENOENT') {
-        throw new Error(`confid file ${fullFileName} not found`);
-      }
-
-      if (errorHaveCode(error)) {
-        throw new Error(
-          `failed to read config file ${fullFileName}. Error: ${error.message} (${error.code})`,
-        );
-      }
-
-      throw new Error(
-        `failed to read config file ${fullFileName}. Error: ${
-          error instanceof Error ? error.message : error
-        }`,
-      );
-    }
-  }
-
-  private parseFile(content: string) {
-    try {
-      return JSON.parse(content);
-    } catch (error) {
-      if (
-        error instanceof SyntaxError &&
-        !(
-          error.message.includes("token '/'") ||
-          error.message.includes('token /')
-        )
-      ) {
-        throw error;
-      }
-
-      if (JSON5 === null) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        JSON5 = require('json5') as JSON;
-      }
-
-      return JSON5.parse(content);
-    }
-  }
+    throw new Error(`config file ${file} returned an invalid json object ${result}`);
+  };
 }

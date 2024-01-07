@@ -1,14 +1,12 @@
 import { FQLN } from './schema';
 import { ConfigLoader, Dict } from './types';
 
-export class EnvLoader implements ConfigLoader {
-  constructor(private readonly envs: Dict<string>) { }
-
-  public async load(fqlns: FQLN[]) {
+export function environmentVariablesLoader(envs: Dict<string>): ConfigLoader {
+  return (fqlns: FQLN[]) => {
     const result: Record<string, unknown> = {};
 
     for (const fqln of fqlns) {
-      const value = this.envs[fqln.key];
+      const value = envs[fqln.key];
       if (value === undefined) {
         continue;
       }
@@ -25,6 +23,6 @@ export class EnvLoader implements ConfigLoader {
       }
     }
 
-    return result;
-  }
+    return Promise.resolve(result);
+  };
 }

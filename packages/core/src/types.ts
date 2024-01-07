@@ -9,5 +9,5 @@ export interface Dict<T> {
 }
 
 export interface ConfigLoader {
-  load(fqlns: FQLN[]): Promise<unknown>;
+  (fqlns: FQLN[]): Promise<unknown>;
 }

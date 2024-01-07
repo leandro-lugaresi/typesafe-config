@@ -30,7 +30,7 @@ export class ConfigManager<
     const fqlns = adapter.fullQualifiedKeys(this.schema);
     for (const loader of this.loaders) {
       try {
-        const data = await loader.load(fqlns);
+        const data = await loader(fqlns);
         if (data) {
           values.push(data);
         }
