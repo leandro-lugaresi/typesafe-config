@@ -1,4 +1,4 @@
-export * from './manager';
-export * from './types';
+export * from './createConfig';
 export * from './env';
 export * from './jsonFileLoader';
+export * from './registry';

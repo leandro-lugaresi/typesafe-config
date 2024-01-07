@@ -1,13 +1,13 @@
 import { describe, expect, it } from '@jest/globals';
 import { z } from 'zod';
 import { resolve } from 'path';
-import { ConfigManager } from './manager';
+import { createConfig } from './createConfig';
 import { environmentVariablesLoader } from './env';
 import { jsonFileLoader } from './jsonFileLoader';
 
-describe(ConfigManager, () => {
+describe('createConfig', () => {
   it('should be able to load the entire config from loaders', async () => {
-    const manager = new ConfigManager(
+    const config = await createConfig(
       'zod',
       z.object({
         db: z.object({ url: z.string() }),
@@ -22,9 +22,7 @@ describe(ConfigManager, () => {
       ],
     );
 
-    await manager.init();
-
-    expect(manager.values()).toEqual({
+    expect(config).toEqual({
       db: { url: 'postgres://from-env:5432' },
       port: 3000,
       nested: { foo: { bar: 'baz' } },
