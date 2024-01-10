@@ -1,5 +1,5 @@
 {
-  "name": "simple-config",
+  "name": "@typesafe-config",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "local-registry": {
