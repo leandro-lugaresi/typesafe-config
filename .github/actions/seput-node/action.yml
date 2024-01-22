@@ -1,0 +1,20 @@
+# - name: Setup Node + install deps
+#   uses: actions/setup-node@v4
+#   with:
+#     node-version: ${{ matrix.node }}
+#
+# - run: npm ci
+
+name: 'Setup  Node + NPM + Install Dependencies'
+description: 'Setup  Node + NPM + Install Dependencies'
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    - name: Install Project Dependencies
+      run: npm ci
+      shell: bash

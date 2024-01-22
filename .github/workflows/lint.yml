@@ -1,0 +1,25 @@
+name: Lint TS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  type-check:
+    name: Type Check (tsc)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: lint
+          affected: 'true'

@@ -1,0 +1,31 @@
+name: 'Tests'
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 19, 20, 21]
+    name: Node ${{ matrix.node }} Tests
+    steps:
+      - name: Checkout project repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node + install deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - run: npm ci
+      - uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: test
+          affected: 'true'
