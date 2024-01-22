@@ -1,14 +1,27 @@
 import { FQLN, SchemaProvider, SchemaTypeProvider } from '../schema';
-import { AnyZodObject, z, ZodObject, ZodTypeAny } from 'zod';
+import type { AnyZodObject, z, ZodObject, ZodTypeAny } from 'zod';
 
 const concatKeys = (prefix: string, key: string) => (prefix === '' ? key : `${prefix}_${key}`);
+
+const isZodObject = (schema: unknown): schema is AnyZodObject => {
+  return (
+    typeof schema === 'object' &&
+    schema !== null &&
+    '_def' in schema &&
+    typeof schema['_def'] === 'object' &&
+    schema['_def'] !== null &&
+    'typeName' in schema['_def'] &&
+    schema['_def']['typeName'] === 'ZodObject'
+  );
+};
 
 const namesFromSchema = <Schema extends AnyZodObject>(keyPrefix: string, paths: string[], schema: Schema): FQLN[] => {
   const fqlns: FQLN[] = [];
   for (const [key, schemaOrSpec] of Object.entries(schema.shape)) {
     const currentKey = concatKeys(keyPrefix, key.toUpperCase());
     const currentPath = paths.concat([key]);
-    if (schemaOrSpec instanceof ZodObject) {
+
+    if (isZodObject(schemaOrSpec)) {
       fqlns.push(...namesFromSchema(currentKey, currentPath, schemaOrSpec));
     } else {
       fqlns.push({ key: concatKeys(keyPrefix, key.toUpperCase()), path: currentPath });
