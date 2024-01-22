@@ -54,20 +54,30 @@ function loadFile(fullFileName: string) {
   }
 }
 
-function parseFile(content: string) {
+function tryParseJson5(content: string) {
   try {
-    return JSON.parse(content);
-  } catch (error) {
-    if (error instanceof SyntaxError && !(error.message.includes("token '/'") || error.message.includes('token /'))) {
-      throw error;
-    }
-
     if (JSON5 === null) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       JSON5 = require('json5') as JSON;
     }
 
     return JSON5.parse(content);
+  } catch (error) {
+    return null;
+  }
+}
+
+function parseFile(content: string) {
+  try {
+    return JSON.parse(content);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      const parsed = tryParseJson5(content);
+      if (parsed !== null) {
+        return parsed;
+      }
+    }
+    throw error;
   }
 }
 
