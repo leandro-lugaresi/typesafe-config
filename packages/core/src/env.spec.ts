@@ -13,7 +13,7 @@ describe('environmentVariablesLoader', () => {
     process.env['NODE_ENV'] = 'test';
 
     const loader = environmentVariablesLoader(process.env);
-    const result = await loader([{ key: 'NODE_ENV', path: ['NODE_ENV'] }]);
+    const result = await loader.load([{ key: 'NODE_ENV', path: ['NODE_ENV'] }]);
     expect(result).toEqual({
       NODE_ENV: 'test',
     });
@@ -22,7 +22,7 @@ describe('environmentVariablesLoader', () => {
   it('load should be able to get the values from environment variables', async () => {
     const loader = environmentVariablesLoader(envs);
 
-    const result = await loader([
+    const result = await loader.load([
       { key: 'DB_URL', path: ['db', 'url'] },
       { key: 'PORT', path: ['port'] },
       { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'] },
@@ -40,7 +40,7 @@ describe('environmentVariablesLoader', () => {
   it('load should work if the schema have variables in "ENV_CASE"', async () => {
     const loader = environmentVariablesLoader(envs);
 
-    const result = await loader([
+    const result = await loader.load([
       { key: 'DB_URL', path: ['DB_URL'] },
       { key: 'PORT', path: ['PORT'] },
       { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'] },

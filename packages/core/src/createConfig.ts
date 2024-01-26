@@ -25,7 +25,7 @@ export async function createConfig<
   const fqlns = adapter.fullQualifiedKeys(schema);
   for (const loader of loaders) {
     try {
-      const data = await loader(fqlns);
+      const data = await loader.load(fqlns);
       if (data) {
         values.push(data);
       }

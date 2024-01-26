@@ -94,16 +94,21 @@ export function jsonFileLoader(configDir?: string, baseName?: string): ConfigLoa
     baseNames.push(env, `${env}.local`);
   }
 
-  return () => {
-    const file = locateMatchingFile(configDir ?? join(process.cwd(), 'config'), baseNames);
-    if (file === null) {
-      throw new Error(`config file not found. Searched for ${getFilesAllowed(baseNames).join(', ')}`);
-    }
-    const content = loadFile(file);
-    const result = parseFile(content);
-    if (typeof result === 'object' && result !== null) {
-      return result;
-    }
-    throw new Error(`config file ${file} returned an invalid json object ${result}`);
+  const dir = configDir ?? join(process.cwd(), 'config');
+
+  return {
+    load: () => {
+      const file = locateMatchingFile(dir, baseNames);
+      if (file === null) {
+        throw new Error(`config file not found. Searched for ${getFilesAllowed(baseNames).join(', ')}`);
+      }
+      const content = loadFile(file);
+      const result = parseFile(content);
+      if (typeof result === 'object' && result !== null) {
+        return result;
+      }
+      throw new Error(`config file ${file} returned an invalid json object ${result}`);
+    },
+    identifier: `jsonFileLoader(${dir}, [${baseNames.join(', ')}])`,
   };
 }
