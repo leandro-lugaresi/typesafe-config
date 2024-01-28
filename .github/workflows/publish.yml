@@ -9,6 +9,8 @@ jobs:
       matrix:
         package: ['core']
     name: Publishing ${{ matrix.package }}
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - name: Checkout project repo
         uses: actions/checkout@v4
@@ -16,10 +18,5 @@ jobs:
       - name: Setup Node
         uses: ./.github/actions/setup-node
 
-      - name: Building ${{ matrix.package }}
-        run: npm run build ${{ matrix.package }}
-
       - name: Publish package on NPM 📦
-        run: node ./tools/scripts/publish.mjs ${{ matrix.package }} ${{ github.event.release.tag_name }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm run nx publish ${{ matrix.package }} --ver=${{ github.event.release.tag_name }} --tag=${{ github.event.release.prerelease && 'next' || 'latest' }}
