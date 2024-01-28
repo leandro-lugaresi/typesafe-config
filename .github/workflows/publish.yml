@@ -19,4 +19,4 @@ jobs:
         uses: ./.github/actions/setup-node
 
       - name: Publish package on NPM 📦
-        run: npm run nx publish ${{ matrix.package }} --ver=${{ github.event.release.tag_name }} --tag=${{ github.event.release.prerelease && 'next' || 'latest' }}
+        run: npx nx publish ${{ matrix.package }} --ver=${{ github.event.release.tag_name }} --tag=${{ github.event.release.prerelease && 'next' || 'latest' }}
