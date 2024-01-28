@@ -17,6 +17,6 @@ jobs:
         uses: ./.github/actions/setup-node
 
       - name: Publish package on NPM 📦
-        run: node ./tools/scripts/publish.js ${{ matrix.package }} ${{ github.event.release.tag_name }}
+        run: node ./tools/scripts/publish.mjs ${{ matrix.package }} ${{ github.event.release.tag_name }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
