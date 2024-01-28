@@ -16,6 +16,9 @@ jobs:
       - name: Setup Node
         uses: ./.github/actions/setup-node
 
+      - name: Building ${{ matrix.package }}
+        run: npm run build ${{ matrix.package }}
+
       - name: Publish package on NPM 📦
         run: node ./tools/scripts/publish.mjs ${{ matrix.package }} ${{ github.event.release.tag_name }}
         env:
