@@ -22,7 +22,7 @@ function invariant(condition, message) {
 
 // Executing publish script: node path/to/publish.mjs {name} --version {version} --tag {tag}
 // Default "tag" to "next" so we won't publish the "latest" tag by accident.
-const [, , name, version, tag = 'next'] = process.argv;
+const [, , name, version, tag = 'next', otp] = process.argv;
 
 // A simple SemVer validation to validate the version
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
@@ -36,7 +36,9 @@ const project = graph.nodes[name];
 
 invariant(
   project,
-  `Could not find project "${name}" in the workspace. Is the project.json configured correctly?`,
+  `Could not find project "${name}" in the workspace, project names available: ${Object.keys(graph.nodes).join(
+    ', ',
+  )}. Is the project.json configured correctly?`,
 );
 
 const outputPath = project.data?.targets?.build?.options?.outputPath;
@@ -57,4 +59,4 @@ try {
 }
 
 // Execute "npm publish" to publish
-execSync(`npm publish --access public --tag ${tag}`);
+execSync(`npm publish --access public --tag ${tag} ${otp ? `--otp ${otp}` : ''}`);
