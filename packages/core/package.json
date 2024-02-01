@@ -8,6 +8,7 @@
   "main": "./index.cjs",
   "module": "./index.js",
   "devDependencies": {
+    "arktype": "^1.0.29-alpha",
     "expect-type": "^0.17.3",
     "json5": "^2.2.3",
     "yup": "^1.3.3",
@@ -15,6 +16,8 @@
   },
   "peerDependencies": {
     "json5": "^2.2.3",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "yup": "^1.3.3",
+    "arktype": "^1.0.29-alpha"
   }
 }

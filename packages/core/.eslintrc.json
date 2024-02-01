@@ -43,7 +43,8 @@
             ],
             "ignoredDependencies": [
               "@jest/globals",
-              "expect-type"
+              "expect-type",
+              "yup"
             ]
           }
         ]
