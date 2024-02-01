@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@typesafe-config/aws": ["packages/aws/src/index.ts"],
       "@typesafe-config/core": ["packages/core/src/index.ts"]
     }
   },
