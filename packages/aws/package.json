@@ -1,7 +1,10 @@
 {
   "name": "@typesafe-config/aws",
   "version": "0.0.1",
-  "dependencies": {},
+  "devDependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.504.0",
+    "@typesafe-config/core": "*"
+  },
   "type": "commonjs",
   "main": "./index.cjs",
   "module": "./index.js"
