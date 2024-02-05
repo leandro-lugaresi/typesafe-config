@@ -9,11 +9,20 @@ describe('environmentVariablesLoader', () => {
     NESTED_FOO_BAZ: 'bar', // This should be ignored
   };
 
+  const fqlns = [
+    { key: 'DB', path: ['db'], object: true },
+    { key: 'DB_URL', path: ['db', 'url'], object: false },
+    { key: 'PORT', path: ['port'], object: false },
+    { key: 'NESTED', path: ['nested'], object: true },
+    { key: 'NESTED_FOO', path: ['nested', 'foo'], object: true },
+    { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'], object: false },
+  ];
+
   it('EnvLoader must be compatible with process.env', async () => {
     process.env['NODE_ENV'] = 'test';
 
     const loader = environmentVariablesLoader(process.env);
-    const result = await loader.load([{ key: 'NODE_ENV', path: ['NODE_ENV'] }]);
+    const result = await loader.load([{ key: 'NODE_ENV', path: ['NODE_ENV'], object: false }]);
     expect(result).toEqual({
       NODE_ENV: 'test',
     });
@@ -22,11 +31,7 @@ describe('environmentVariablesLoader', () => {
   it('load should be able to get the values from environment variables', async () => {
     const loader = environmentVariablesLoader(envs);
 
-    const result = await loader.load([
-      { key: 'DB_URL', path: ['db', 'url'] },
-      { key: 'PORT', path: ['port'] },
-      { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'] },
-    ]);
+    const result = await loader.load(fqlns);
 
     expect(result).toEqual({
       db: { url: 'postgres://localhost:5432' },
@@ -41,9 +46,9 @@ describe('environmentVariablesLoader', () => {
     const loader = environmentVariablesLoader(envs);
 
     const result = await loader.load([
-      { key: 'DB_URL', path: ['DB_URL'] },
-      { key: 'PORT', path: ['PORT'] },
-      { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'] },
+      { key: 'DB_URL', path: ['DB_URL'], object: false },
+      { key: 'PORT', path: ['PORT'], object: false },
+      { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'], object: false },
     ]);
 
     expect(result).toEqual({
@@ -51,6 +56,24 @@ describe('environmentVariablesLoader', () => {
       // The source don't convert any value and just return the raw values
       // (string for environment variables)
       PORT: '3000',
+      nested: { foo: { bar: 'baz' } },
+    });
+  });
+
+  it('should be able to get the json values from intermediary object paths', async () => {
+    const loader = environmentVariablesLoader({
+      DB: '{ "url": "postgres://localhost:5432" }',
+      PORT: '3000',
+      NESTED_FOO: '{ "bar": "baz" }',
+    });
+
+    const result = await loader.load(fqlns);
+
+    expect(result).toEqual({
+      db: { url: 'postgres://localhost:5432' },
+      // The source don't convert any value and just return the raw values
+      // (string for environment variables)
+      port: '3000',
       nested: { foo: { bar: 'baz' } },
     });
   });

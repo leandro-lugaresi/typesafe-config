@@ -22,9 +22,12 @@ const namesFromSchema = <Schema extends AnyZodObject>(keyPrefix: string, paths: 
     const currentPath = paths.concat([key]);
 
     if (isZodObject(schemaOrSpec)) {
-      fqlns.push(...namesFromSchema(currentKey, currentPath, schemaOrSpec));
+      fqlns.push(
+        { key: currentKey, path: currentPath, object: true },
+        ...namesFromSchema(currentKey, currentPath, schemaOrSpec),
+      );
     } else {
-      fqlns.push({ key: concatKeys(keyPrefix, key.toUpperCase()), path: currentPath });
+      fqlns.push({ key: concatKeys(keyPrefix, key.toUpperCase()), path: currentPath, object: false });
     }
   }
   return fqlns;

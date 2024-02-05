@@ -18,22 +18,24 @@ describe('getConfigKeysInfo', () => {
       [
         jsonFileLoader(dir, 'default'),
         environmentVariablesLoader({
-          DB_URL: 'postgres://from-env:5432',
+          DB: '{ "url": "postgres://from-env:5432"}',
         }),
       ],
     );
 
     expect(info).toEqual([
-      { key: 'DB_URL', loader: 'environmentVariablesLoader', path: ['db', 'url'] },
+      { key: 'DB_URL', loader: 'environmentVariablesLoader', path: ['db', 'url'], object: false },
       {
         key: 'PORT',
         loader: `jsonFileLoader(${dir}, [default])`,
         path: ['port'],
+        object: false,
       },
       {
         key: 'NESTED_FOO_BAR',
         loader: `jsonFileLoader(${dir}, [default])`,
         path: ['nested', 'foo', 'bar'],
+        object: false,
       },
     ]);
   });

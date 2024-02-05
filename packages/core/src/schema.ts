@@ -16,7 +16,7 @@ export type SchemaValidationResult<Schema, SchemaType extends SchemaTypeProvider
   | { success: true; data: InferOutput<SchemaType, Schema> }
   | { success: false; error: InferError<SchemaType> };
 
-export type FQLN = { key: string; path: string[] };
+export type FQLN = { key: string; path: string[]; object: boolean };
 
 export type SchemaProvider<SchemaType extends SchemaTypeProvider = SchemaTypeProvider> = {
   validate: <TSchema extends InferBaseSchema<SchemaType>>(
