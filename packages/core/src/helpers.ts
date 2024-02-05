@@ -41,5 +41,6 @@ export async function getConfigKeysInfo<
       }
     });
   }
-  return configInfo;
+
+  return configInfo.filter(info => info.object === false);
 }

@@ -1,6 +1,17 @@
 import { FQLN } from './schema';
 import { ConfigLoader, Dict } from './types';
 
+function parseValue(value: string): unknown {
+  try {
+    if (value.trim().startsWith('{') || value.trim().startsWith('[')) {
+      return JSON.parse(value);
+    }
+    return value;
+  } catch {
+    return value;
+  }
+}
+
 export function environmentVariablesLoader(envs: Dict<string>): ConfigLoader {
   return {
     load: (fqlns: FQLN[]) => {
@@ -12,11 +23,13 @@ export function environmentVariablesLoader(envs: Dict<string>): ConfigLoader {
           continue;
         }
 
+        const parsedValue = parseValue(value);
+
         let current = result;
         for (let i = 0; i < fqln.path.length; i++) {
           const k = fqln.path[i];
           if (i === fqln.path.length - 1) {
-            current[k] = value;
+            current[k] = parsedValue;
           } else {
             current[k] = current[k] || {};
             current = current[k] as Record<string, unknown>;
