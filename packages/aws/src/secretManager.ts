@@ -1,13 +1,9 @@
 import type { ConfigLoader, FQLN } from '@typesafe-config/core';
-import {
-  SecretsManagerClient,
-  BatchGetSecretValueCommand,
-  SecretValueEntry,
-  APIErrorType,
-} from '@aws-sdk/client-secrets-manager';
+import { SecretsManagerClient, GetSecretValueCommand, SecretValueEntry } from '@aws-sdk/client-secrets-manager';
 
-type Secrets = Map<string, SecretValueEntry>;
-type Options = { onErrors?: (errors: APIErrorType[]) => void };
+type EnvModeOption = { mode: 'env'; secretId: string };
+type configModeOption = { mode: 'config'; secretId: string; configPath: string[] };
+type Options = EnvModeOption | configModeOption;
 
 function parseValue(value: string): unknown {
   try {
@@ -20,35 +16,8 @@ function parseValue(value: string): unknown {
   }
 }
 
-async function getSercretsInBatch(client: SecretsManagerClient, fqlns: FQLN[]) {
-  let isDone = false;
-  let nextToken: string | undefined;
-  const secrets: Secrets = new Map();
-  const errors: APIErrorType[] = [];
-
-  while (!isDone) {
-    isDone = true;
-    const result = await client.send(
-      new BatchGetSecretValueCommand({
-        Filters: [{ Key: 'name', Values: fqlns.map(fqln => fqln.key) }],
-        NextToken: nextToken,
-      }),
-    );
-    if (result.Errors) {
-      errors.push(...result.Errors);
-    }
-
-    if (result.SecretValues) {
-      for (const secret of result.SecretValues) {
-        secrets.set(secret.Name ?? '', secret);
-      }
-    }
-    if (result.NextToken) {
-      nextToken = result.NextToken;
-      isDone = false;
-    }
-  }
-  return { secrets, errors };
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function getSecretValue(value: SecretValueEntry): string {
@@ -64,42 +33,56 @@ function getSecretValue(value: SecretValueEntry): string {
   return '';
 }
 
-function mapSecretsToConfigObject(fqlns: FQLN[], secrets: Secrets): Record<string, unknown> {
+function mapSecretsToConfigObject(fqlns: FQLN[], secret: SecretValueEntry, options: Options): Record<string, unknown> {
   const result: Record<string, unknown> = {};
+  const value = getSecretValue(secret);
+  const parsedValue = parseValue(value);
 
-  for (const fqln of fqlns) {
-    const value = secrets.get(fqln.key);
-    if (value === undefined) {
-      continue;
-    }
-
-    const data = getSecretValue(value);
-    const parsedValue = parseValue(data);
-
+  if (options.mode === 'config') {
+    const configPath = options.configPath;
     let current = result;
-    for (let i = 0; i < fqln.path.length; i++) {
-      const k = fqln.path[i];
-      if (i === fqln.path.length - 1) {
-        current[k] = parsedValue;
+    for (let i = 0; i < configPath.length; i++) {
+      const key = configPath[i];
+      if (i === configPath.length - 1) {
+        current[key] = parsedValue;
       } else {
-        current[k] = current[k] || {};
-        current = current[k] as Record<string, unknown>;
+        current[key] = current[key] || {};
+        current = current[key] as Record<string, unknown>;
       }
     }
+    return result;
   }
+
+  if (options.mode === 'env' && isRecord(parsedValue)) {
+    for (const fqln of fqlns) {
+      const value = parsedValue[fqln.key];
+      if (value === undefined) {
+        continue;
+      }
+
+      let current = result;
+      for (let i = 0; i < fqln.path.length; i++) {
+        const key = fqln.path[i];
+        if (i === fqln.path.length - 1) {
+          current[key] = value;
+        } else {
+          current[key] = current[key] || {};
+          current = current[key] as Record<string, unknown>;
+        }
+      }
+    }
+    return result;
+  }
+
   return result;
 }
 
 export function secretManagerLoader(client: SecretsManagerClient, options: Options): ConfigLoader {
   return {
     load: async fqlns => {
-      const result = await getSercretsInBatch(client, fqlns);
+      const response = await client.send(new GetSecretValueCommand({ SecretId: options.secretId }));
 
-      if (options.onErrors && result.errors.length > 0) {
-        options.onErrors(result.errors);
-      }
-
-      return mapSecretsToConfigObject(fqlns, result.secrets);
+      return mapSecretsToConfigObject(fqlns, response, options);
     },
     identifier: 'aws-secrets-manager',
   };

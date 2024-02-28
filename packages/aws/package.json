@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "devDependencies": {
     "@aws-sdk/client-secrets-manager": "^3.504.0",
-    "@typesafe-config/core": "*"
+    "@typesafe-config/core": "*",
+    "aws-sdk-client-mock": "^3.0.1"
   },
   "type": "commonjs",
   "main": "./index.cjs",
