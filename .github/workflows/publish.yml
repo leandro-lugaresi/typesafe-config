@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: ['core']
+        package: ['core', 'aws']
     name: Publishing ${{ matrix.package }}
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
