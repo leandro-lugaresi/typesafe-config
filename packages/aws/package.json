@@ -6,6 +6,10 @@
     "@typesafe-config/core": "*",
     "aws-sdk-client-mock": "^3.0.1"
   },
+  "peerDependencies": {
+    "@typesafe-config/core": "*",
+    "@aws-sdk/client-secrets-manager": "^3.504.0"
+  },
   "type": "commonjs",
   "main": "./index.cjs",
   "module": "./index.js"
