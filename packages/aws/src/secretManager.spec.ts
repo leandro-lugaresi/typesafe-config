@@ -1,19 +1,8 @@
-import { beforeEach, afterEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from '@jest/globals';
 import { secretManagerLoader } from './secretManager';
 import { mockClient } from 'aws-sdk-client-mock';
-import { SecretsManagerClient, GetSecretValueCommand, SecretValueEntry } from '@aws-sdk/client-secrets-manager';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 
-class NoErrorThrownError extends Error { }
-
-const getError = async <TError>(call: () => unknown): Promise<TError> => {
-  try {
-    await call();
-
-    throw new NoErrorThrownError();
-  } catch (error: unknown) {
-    return error as TError;
-  }
-};
 const fqlns = [
   { key: 'DB', path: ['db'], object: true },
   { key: 'DB_URL', path: ['db', 'url'], object: false },
