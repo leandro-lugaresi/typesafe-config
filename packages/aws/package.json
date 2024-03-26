@@ -1,6 +1,10 @@
 {
   "name": "@typesafe-config/aws",
   "version": "0.0.1",
+  "description": "Avoid getting invalid configuration inside your application",
+  "repository": "https://github.com/leandro-lugaresi/typesafe-config",
+  "author": "Leandro Lugaresi <leandrolugaresi92@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "@aws-sdk/client-secrets-manager": "^3.504.0",
     "@typesafe-config/core": "*",

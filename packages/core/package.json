@@ -1,6 +1,10 @@
 {
   "name": "@typesafe-config/core",
   "version": "0.0.1",
+  "description": "Avoid getting invalid configuration inside your application",
+  "repository": "https://github.com/leandro-lugaresi/typesafe-config",
+  "author": "Leandro Lugaresi <leandrolugaresi92@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "ts-deepmerge": "^6.2.0"
   },
