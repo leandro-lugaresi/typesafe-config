@@ -20,9 +20,12 @@ const namesFromSchema = (keyPrefix: string, paths: string[], definition: unknown
     const currentPath = paths.concat([processedKey]);
 
     if (isObjectDefinition(definitionOrSyntax)) {
-      fqlns.push(...namesFromSchema(currentKey, currentPath, definitionOrSyntax));
+      fqlns.push(
+        { key: currentKey, path: currentPath, object: true },
+        ...namesFromSchema(currentKey, currentPath, definitionOrSyntax),
+      );
     } else {
-      fqlns.push({ key: currentKey, path: currentPath });
+      fqlns.push({ key: currentKey, path: currentPath, object: false });
     }
   }
   return fqlns;
