@@ -23,12 +23,12 @@ It will get your configuration from muiltiple sources, merge them together and v
 - [x] Get and merge configuration data from multiple sources
 - [x] Environment variables loader
 - [x] JSON file loader
-- [ ] AWS Secrets Manager loader
+- [x] AWS Secrets Manager loader
 - [ ] AWS Parameter Store loader
 - [x] Validate configuration data against a schema and retur the validated data with the types inferred
 - [x] Helper function to get the list of full qualified names used by the K/V loaders (env, AWS SM)
 - [x] Support zod schemas
-- [ ] Add support for other schema validators (io-ts, yup, etc)
+- [x] Add support for other schema validators (io-ts, yup, etc)
 
 ## 🚀 Getting Started
 
