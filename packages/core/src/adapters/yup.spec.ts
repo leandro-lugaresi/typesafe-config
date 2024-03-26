@@ -44,10 +44,13 @@ describe('YupSchemaProvider', () => {
     const result = YupSchemaProvider.fullQualifiedKeys(extendedSchema);
 
     expect(result).toEqual([
-      { key: 'NODE_ENV', path: ['NODE_ENV'] },
-      { key: 'DB_URL', path: ['db', 'url'] },
-      { key: 'PORT', path: ['port'] },
-      { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'] },
+      { key: 'NODE_ENV', path: ['NODE_ENV'], object: false },
+      { key: 'DB', path: ['db'], object: true },
+      { key: 'DB_URL', path: ['db', 'url'], object: false },
+      { key: 'PORT', path: ['port'], object: false },
+      { key: 'NESTED', path: ['nested'], object: true },
+      { key: 'NESTED_FOO', path: ['nested', 'foo'], object: true },
+      { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'], object: false },
     ]);
   });
 
