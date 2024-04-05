@@ -1,6 +1,6 @@
 import merge from 'ts-deepmerge';
 import { toError } from './utils';
-import { AnyLoader, AnyObject, ConfigLoader, Simplify, SyncConfigLoader } from './types';
+import { AnyLoader, AnyObject, ConfigLoader, Simplify, SyncConfigLoader, loadersAreSync } from './types';
 import { InferOutput, SchemaProvider, InferError, FQLN } from './schema';
 import { adapters } from './registry';
 
@@ -57,10 +57,6 @@ export function createConfig<
   } else {
     return loadAsyncronously(loaders, fqlns).then(results => processResults(adapter, schema, results, hooks));
   }
-}
-
-function loadersAreSync(loaders: AnyLoader[]): loaders is SyncConfigLoader[] {
-  return loaders.every(loader => loader.type === 'SyncConfigLoader');
 }
 
 function isRejected(input: PromiseSettledResult<unknown>): input is PromiseRejectedResult {
