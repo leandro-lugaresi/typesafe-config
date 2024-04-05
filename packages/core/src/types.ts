@@ -25,3 +25,7 @@ export type SyncConfigLoader = {
   load: (fqlns: FQLN[]) => AnyObject;
   identifier: string;
 };
+
+export function loadersAreSync(loaders: AnyLoader[]): loaders is SyncConfigLoader[] {
+  return loaders.every(loader => loader.type === 'SyncConfigLoader');
+}
