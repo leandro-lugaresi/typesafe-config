@@ -1,5 +1,5 @@
 import { FQLN } from './schema';
-import { ConfigLoader, Dict } from './types';
+import { Dict, SyncConfigLoader } from './types';
 
 function parseValue(value: string): unknown {
   try {
@@ -12,7 +12,7 @@ function parseValue(value: string): unknown {
   }
 }
 
-export function environmentVariablesLoader(envs: Dict<string>): ConfigLoader {
+export function environmentVariablesLoader(envs: Dict<string>): SyncConfigLoader {
   return {
     load: (fqlns: FQLN[]) => {
       const result: Record<string, unknown> = {};
@@ -37,8 +37,9 @@ export function environmentVariablesLoader(envs: Dict<string>): ConfigLoader {
         }
       }
 
-      return Promise.resolve(result);
+      return result;
     },
+    type: 'SyncConfigLoader',
     identifier: 'environmentVariablesLoader',
   };
 }

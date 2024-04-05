@@ -110,5 +110,6 @@ export function jsonFileLoader(configDir?: string, baseName?: string): ConfigLoa
       throw new Error(`config file ${file} returned an invalid json object ${result}`);
     },
     identifier: `jsonFileLoader(${dir}, [${baseNames.join(', ')}])`,
+    type: 'ConfigLoader',
   };
 }
