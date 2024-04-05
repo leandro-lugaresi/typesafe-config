@@ -84,6 +84,7 @@ export function secretManagerLoader(client: SecretsManagerClient, options: Optio
 
       return mapSecretsToConfigObject(fqlns, response, options);
     },
+    type: 'ConfigLoader',
     identifier: 'aws-secrets-manager',
   };
 }

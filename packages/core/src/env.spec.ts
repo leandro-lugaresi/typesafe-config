@@ -18,20 +18,20 @@ describe('environmentVariablesLoader', () => {
     { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'], object: false },
   ];
 
-  it('EnvLoader must be compatible with process.env', async () => {
+  it('EnvLoader must be compatible with process.env', () => {
     process.env['NODE_ENV'] = 'test';
 
     const loader = environmentVariablesLoader(process.env);
-    const result = await loader.load([{ key: 'NODE_ENV', path: ['NODE_ENV'], object: false }]);
+    const result = loader.load([{ key: 'NODE_ENV', path: ['NODE_ENV'], object: false }]);
     expect(result).toEqual({
       NODE_ENV: 'test',
     });
   });
 
-  it('load should be able to get the values from environment variables', async () => {
+  it('load should be able to get the values from environment variables', () => {
     const loader = environmentVariablesLoader(envs);
 
-    const result = await loader.load(fqlns);
+    const result = loader.load(fqlns);
 
     expect(result).toEqual({
       db: { url: 'postgres://localhost:5432' },
@@ -42,10 +42,10 @@ describe('environmentVariablesLoader', () => {
     });
   });
 
-  it('load should work if the schema have variables in "ENV_CASE"', async () => {
+  it('load should work if the schema have variables in "ENV_CASE"', () => {
     const loader = environmentVariablesLoader(envs);
 
-    const result = await loader.load([
+    const result = loader.load([
       { key: 'DB_URL', path: ['DB_URL'], object: false },
       { key: 'PORT', path: ['PORT'], object: false },
       { key: 'NESTED_FOO_BAR', path: ['nested', 'foo', 'bar'], object: false },
@@ -60,14 +60,14 @@ describe('environmentVariablesLoader', () => {
     });
   });
 
-  it('should be able to get the json values from intermediary object paths', async () => {
+  it('should be able to get the json values from intermediary object paths', () => {
     const loader = environmentVariablesLoader({
       DB: '{ "url": "postgres://localhost:5432" }',
       PORT: '3000',
       NESTED_FOO: '{ "bar": "baz" }',
     });
 
-    const result = await loader.load(fqlns);
+    const result = loader.load(fqlns);
 
     expect(result).toEqual({
       db: { url: 'postgres://localhost:5432' },

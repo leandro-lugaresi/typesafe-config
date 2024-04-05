@@ -86,6 +86,10 @@ console.log(config.db.url);
 //...
 ```
 
+> If you just use sync loaders (custom loaders, or the environmentVariablesLoader)
+> the return of the createConfig will not have a promise, so it's not necessary to
+> await.
+
 #### Using optional hooks
 
 ```typescript

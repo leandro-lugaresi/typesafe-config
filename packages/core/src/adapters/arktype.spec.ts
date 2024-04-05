@@ -61,8 +61,8 @@ describe('ArkTypeSchemaProvider', () => {
     ]);
   });
 
-  it('should support arktype adapter', async () => {
-    const config = await createConfig(
+  it('should support arktype adapter', () => {
+    const config = createConfig(
       'arktype',
       type({
         db: { url: 'string' },
