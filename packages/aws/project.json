@@ -6,28 +6,45 @@
   "targets": {
     "build": {
       "executor": "@nx/rollup:rollup",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/packages/aws",
         "main": "packages/aws/src/index.ts",
         "tsConfig": "packages/aws/tsconfig.lib.json",
-        "assets": [],
+        "assets": [
+          {
+            "glob": "*.md",
+            "input": ".",
+            "output": "."
+          }
+        ],
         "project": "packages/aws/package.json",
         "compiler": "swc",
-        "format": ["cjs", "esm"]
+        "format": [
+          "cjs",
+          "esm"
+        ]
       }
     },
     "publish": {
       "command": "node tools/scripts/publish.mjs aws {args.ver} {args.tag}",
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "packages/aws/jest.config.ts"
       }
