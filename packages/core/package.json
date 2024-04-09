@@ -8,7 +8,7 @@
   "dependencies": {
     "ts-deepmerge": "^6.2.0"
   },
-  "type": "commonjs",
+  "type": "module",
   "main": "./index.cjs",
   "module": "./index.js",
   "devDependencies": {
