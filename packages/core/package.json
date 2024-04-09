@@ -8,9 +8,10 @@
   "dependencies": {
     "ts-deepmerge": "^6.2.0"
   },
-  "type": "module",
-  "main": "./index.cjs",
-  "module": "./index.js",
+  "type": "commonjs",
+  "main": "./index.cjs.js",
+  "types": "./src/index.d.ts",
+  "module": "./index.esm.js",
   "devDependencies": {
     "arktype": "^1.0.29-alpha",
     "expect-type": "^0.17.3",
