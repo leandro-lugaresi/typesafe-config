@@ -14,7 +14,8 @@
     "@typesafe-config/core": "*",
     "@aws-sdk/client-secrets-manager": "^3.504.0"
   },
-  "type": "module",
-  "main": "./index.cjs",
-  "module": "./index.js"
+  "type": "commonjs",
+  "main": "./index.cjs.js",
+  "types": "./src/index.d.ts",
+  "module": "./index.esm.js"
 }
