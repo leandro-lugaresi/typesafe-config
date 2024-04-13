@@ -25,7 +25,8 @@
         "format": [
           "cjs",
           "esm"
-        ]
+        ],
+        "generateExportsField": true
       }
     },
     "publish": {
